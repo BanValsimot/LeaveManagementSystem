@@ -1,4 +1,5 @@
 using LeaveManagementSystem.Web.Data;
+using LeaveManagementSystem.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddScoped<ILeaveTypeServices, LeaveTypeServices>();
 
 builder.Services.AddAutoMapper(cfg => { }, Assembly.GetExecutingAssembly());
 
