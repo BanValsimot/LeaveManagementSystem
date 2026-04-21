@@ -13,20 +13,29 @@ namespace LeaveManagementSystem.Web.Controllers
             _logger = logger;
         }
 
+        //Index View
         public IActionResult Index()
         {
             return View();
         }
 
+        //Privacy View
         public IActionResult Privacy()
         {
             return View();
         }
 
+        //Error View
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            //ViewModel Class designed for an Error View
+            var model = new ErrorViewModel 
+            { 
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier 
+            };
+            //insert Data into a View
+            return View(model);
         }
     }
 }

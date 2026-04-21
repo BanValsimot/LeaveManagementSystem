@@ -1,53 +1,107 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    @* ~ -> wwwroot folder (static files) *@
+    <!-- Basic metadata (applies to EVERY page using this layout) -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - LeaveManagementSystem.Web</title>
+
+    <!-- Page title (dynamic per page using ViewData) -->
+    <title>@ViewData["Title"] - LeaveManagementSystem</title>
+
+    <!-- Bootstrap CSS (used for styling and layout - applies to ALL pages) -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Custom site-wide CSS (your own styles - ALL pages) -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Auto-generated CSS for the project (scoped styles - ALL pages) -->
     <link rel="stylesheet" href="~/LeaveManagementSystem.Web.styles.css" asp-append-version="true" />
 </head>
+
 <body>
+    <!-- HEADER (visible on every page) -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Leave Management System</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+
+                <!-- Logo / Brand link (redirects to Home page) -->
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    Leave Management System
+                </a>
+
+                <!-- Mobile menu toggle button (Bootstrap functionality) -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+                <!-- Navigation links -->
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+
+                        <!-- Home link -->
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+
+                        <!-- Privacy link -->
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+
+                        <!-- Leave Types page -->
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="LeaveTypes" asp-action="Index">Leave Types</a>
                         </li>
                     </ul>
+
+                    <!-- Login/Register or Username/Logout (dynamic based on authentication) -->
+                    <!-- This partial is rendered on EVERY page -->
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
+
+    <!-- MAIN CONTENT AREA -->
     <div class="container">
         <main role="main" class="pb-3">
+
+            <!-- This is where each page’s content is injected -->
+            <!-- DIFFERENT for every page -->
             @RenderBody()
+
         </main>
     </div>
 
+    <!-- FOOTER (same on every page) -->
     <footer class="border-top footer text-muted bg-dark">
         <div class="container">
-            &copy; 2026 - LeaveManagementSystem.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - LeaveManagementSystem -
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+    <!-- ================= SCRIPTS ================= -->
+
+    <!-- jQuery library (used by some Bootstrap components and plugins) -->
+    <!-- Loaded on EVERY page -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- Bootstrap JS (handles navbar toggle, modals, etc.) -->
+    <!-- Loaded on EVERY page -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript for your site -->
+    <!-- Loaded on EVERY page -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Optional section for page-specific scripts -->
+    <!-- Only runs if a page defines "at"section Scripts -->
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
