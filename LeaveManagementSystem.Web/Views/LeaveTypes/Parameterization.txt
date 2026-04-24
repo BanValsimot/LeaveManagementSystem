@@ -1,0 +1,63 @@
+﻿Parameterization (SQL Injection Prevention)
+
+Parameterization is a technique used when interacting with a Database 
+where user input is passed as parameters instead of being directly inserted 
+into SQL queries.
+
+Instead of building SQL queries using string concatenation (which is unsafe), 
+parameterized queries separate the SQL command from the user-provided data. 
+This ensures that the input is treated strictly as data, not as executable SQL code.
+
+This is important because it prevents SQL Injection attacks, 
+where a malicious user tries to manipulate a query by injecting SQL commands 
+into input fields.
+
+Example (UNSAFE):
+Building a query using string concatenation:
+
+SELECT * FROM Users WHERE Name = '" + userInput + "'
+This means that whatever the user types becomes part of the SQL query itself.
+
+Problem scenario (SQL Injection):
+If a malicious user enters: ' OR 1=1 --
+
+The query becomes:
+SELECT * FROM Users WHERE Name = '' OR 1=1 --'
+
+Breakdown:
+Name = '' → false
+OR 1=1 → always true
+-- → comment in SQL (ignores the rest of the query)
+
+Result:
+The condition is always true → ALL records are returned
+This allows attackers to bypass filters and access all data.
+
+Example (SAFE - parameterized):
+
+SELECT * FROM Users WHERE Name = @name
+
+Here, @name is a parameter, and the value is passed separately, 
+so it cannot alter the structure of the query.
+
+In Entity Framework Core:
+Parameterization happens automatically when using LINQ queries:
+
+_context.Users.FirstOrDefault(u => u.Name == userInput);
+
+EF Core converts this into a parameterized SQL query behind the scenes.
+
+What happens now:
+
+If the user enters: ' OR 1=1 --
+
+The database treats it as: A literal string value, not executable SQL
+
+So the query effectively becomes:
+WHERE Name = "' OR 1=1 --"
+
+No injection occurs.
+
+One-line summary:
+Parameterization ensures user input is treated as data, not code, 
+preventing SQL Injection attacks.

@@ -1,3 +1,18 @@
-﻿@{
+﻿@* _ViewStart.cshtml sets a default layout for all views in a folder, 
+so you don’t have to repeat it in each view) *@
+@{
     Layout = "_Layout";
 }
+
+@* What happens behind the scenes
+
+When you return a view:
+
+return View();
+
+ASP.NET does this:
+
+1. Find the view (e.g. Index.cshtml)
+2. Run _ViewStart.cshtml
+3. Apply Layout setting
+4. Render the view inside the layout *@

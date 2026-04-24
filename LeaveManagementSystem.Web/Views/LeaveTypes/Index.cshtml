@@ -1,4 +1,5 @@
-﻿@model IEnumerable<LeaveTypeReadOnlyVM>
+﻿@* Model = collection (list) of LeaveTypeReadOnlyVM *@
+@model IEnumerable<LeaveTypeReadOnlyVM>
 
 @{
     ViewData["Title"] = "Index";
@@ -7,30 +8,38 @@
 <h1>Index</h1>
 
 <p>
+    @* goto action Create in LeaveTypesController *@
     <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
+@* create a table *@
 <table class="table">
+    @* headers *@
     <thead>
-        <tr>
-            <th>
+        <tr> @* row *@
+            <th> @* 1st header *@
+                @* display the name of the model's property (headers) *@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th>
+            <th> @* 2nd header *@
                 @Html.DisplayNameFor(model => model.Days)
             </th>
-            <th></th>
+            <th>Actions</th> @* 3rd header -> other actions *@
         </tr>
     </thead>
+
     <tbody>
+        @* display all records *@
+        @* Model -> object representing data in table *@
 @foreach (var item in Model) {
-        <tr>
-            <td>
+        <tr> @* row *@
+            <td> @* 1st column *@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
-            <td>
+            <td> @* 2nd column *@
                 @Html.DisplayFor(modelItem => item.Days)
             </td>
-            <td>
+            <td> @* 3rd column *@
+                 @* pass the Id of an item into an Action *@
                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> 
                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> 
                 <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
@@ -39,3 +48,8 @@
 }
     </tbody>
 </table>
+
+@* Model      → actual data passed to the view
+   model      → lambda parameter (temporary name)
+   modelItem  → lambda parameter (temporary name)
+   item       → variable in foreach loop *@

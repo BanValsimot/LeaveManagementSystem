@@ -1,29 +1,39 @@
 ﻿@model LeaveTypeReadOnlyVM
 
 @{
-    ViewData["Title"] = $"{@Model.Name} Details";
+    ViewData["Title"] = $"{Model.Name} Details";
 }
 
 <h1>@Model.Name Details</h1>
 
 <div>
     <hr/>
+    @* <dl> = Description List (used to display key-value pairs like label + value) *@
     <dl class="row">
-        <dt class = "col-sm-2">
+        @* <dt> = Description Term (label / property name) *@
+        <dt class="col-sm-2">
+            @* Displays the name of the property (e.g. "Name") *@
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+
+        @* <dd> = Description Details (value of the property) *@
+        <dd class="col-sm-10">
+            @* Displays the value of the property *@
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
+
+        @* Repeat for another property *@
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Days)
         </dt>
-        <dd class = "col-sm-10">
+
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Days)
         </dd>
     </dl>
 </div>
 <div>
+    @* pass in data Id into the Edit View *@
     <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">Edit</a> 
     <a asp-action="Index" class="btn btn-primary">Back to List</a>
 </div>

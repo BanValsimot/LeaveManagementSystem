@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace LeaveManagementSystem.Web.Controllers;
 
+//Database UI Controller -> scaffolded (with Views)
 public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Controller
 {
     private const string NameExistsValidationMessage =
@@ -20,6 +21,7 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
     //GET: LeaveTypes -> LeaveTypeReadOnlyVM
     public async Task<IActionResult> Index()
     {
+        //Get a list of LeaveTypes -> overview of Data in the Database
         var viewData = await _leaveTypeServices.GetAllAsync();
 
         //return the View Model to the View
@@ -65,13 +67,14 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
             ModelState.AddModelError(nameof(leaveTypeCreate.Name),
                 NameExistsValidationMessage);
         };
-
+        //ModelState stores the state of data submitted from a form,
+        //including values and validation errors
         if (ModelState.IsValid)
         {
             await _leaveTypeServices.CreateAsync(leaveTypeCreate);
             return RedirectToAction(nameof(Index));
         }
-        //not valid
+        //Data not valid -> return to a Create page (errors will appear in Browser)
         return View(leaveTypeCreate);
     }
 
@@ -113,13 +116,18 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
             ModelState.AddModelError(nameof(leaveTypeEdit.Name),
                 NameExistsValidationMessage);
         };
-
+        //ModelState stores the state of data submitted from a form,
+        //including values and validation errors
         if (ModelState.IsValid)
         {
             try
             {
                 await _leaveTypeServices.EditAsync(leaveTypeEdit);
             }
+            // DbUpdateConcurrencyException occurs when multiple users try to update or delete
+            // the same database record at the same time (concurrency conflict).
+            // It means the data in the database has changed since it was originally loaded,
+            // so the current operation cannot be completed safely.
             catch (DbUpdateConcurrencyException)
             {
                 if (!_leaveTypeServices.LeaveTypeExists(leaveTypeEdit.Id))
@@ -131,8 +139,10 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
                     throw;
                 }
             }
+            //redirect to Main View
             return RedirectToAction(nameof(Index));
         }
+        //return to Edit View (show errors)
         return View(leaveTypeEdit);
     }
 
@@ -156,6 +166,8 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
     }
 
     // POST: LeaveTypes/Delete/5
+    //ActionName("Delete") -> allows overloading when 2 methods have
+    //the same signature but should have the same name
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
