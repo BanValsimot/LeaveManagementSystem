@@ -1,0 +1,87 @@
+﻿SOLID – “I” (Interface Segregation Principle)
+
+The “I” in SOLID stands for the Interface Segregation Principle (ISP).
+
+Clients should not be forced to depend on Interfaces they do not use.
+What this means:
+
+Instead of creating one large interface with many methods, 
+we should create smaller, specific interfaces.
+
+This ensures that classes only implement the functionality they actually need.
+
+Bad example (violates ISP):
+interface ILeaveTypeService
+{
+    GetAll();
+    Create();
+    Delete();
+    SendEmail();   // unrelated
+}
+
+👉 A class that only needs CRUD operations is forced to implement SendEmail().
+
+Good example (follows ISP)
+interface ILeaveTypeService
+{
+    GetAll();
+    Create();
+    Delete();
+}
+
+interface IEmailService
+{
+    SendEmail();
+}
+
+👉 Each interface has a clear responsibility.
+---------------------------------------------
+
+Contract vs Implementation
+
+Contract (Interface) defines:
+
+WHAT a class must do (methods, signatures)
+
+Example:
+
+interface ILeaveTypeServices
+{
+    Task<List<LeaveType>> GetAllAsync();
+}
+
+👉 No logic, only method definitions.
+
+Implementation (Class) defines:
+
+HOW the work is done
+
+Example:
+
+class LeaveTypeServices : ILeaveTypeServices
+{
+    public async Task<List<LeaveType>> GetAllAsync()
+    {
+        // actual logic here
+    }
+}
+
+Relationship
+Interface (contract) → defines rules  
+Class (implementation) → follows rules
+-----------------------------------------------------
+
+Why this is important:
+
+1.Promotes loose coupling
+2.Makes code easier to test
+3.Allows swapping implementations easily
+4.Improves maintainability
+
+One-line summary:
+Interface = contract (what to do)  
+Class = implementation (how to do it)
+
+Final takeaway:
+Interface Segregation Principle ensures that contracts are small and focused, 
+so classes only implement what they actually need.

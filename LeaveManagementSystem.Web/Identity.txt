@@ -1,0 +1,17 @@
+﻿What Identity adds to your database
+
+When you enable Identity (e.g. via AddIdentity or scaffolding), 
+it creates a schema like this:
+
+👤 Core user/role tables
+AspNetUsers → users
+AspNetRoles → roles
+
+🔗 Relationship tables
+AspNetUserRoles → which user has which role
+AspNetUserClaims → claims per user
+AspNetRoleClaims → claims per role
+
+🔐 Authentication-related tables
+AspNetUserLogins → external logins (Google, Facebook…)
+AspNetUserTokens → tokens (reset password, refresh, etc.)

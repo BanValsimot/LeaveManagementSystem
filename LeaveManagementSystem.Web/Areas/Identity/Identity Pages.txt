@@ -1,0 +1,126 @@
+﻿ASP.NET Core Identity – Structure and Layout Explanation
+
+Big Picture
+
+ASP.NET Core Identity is structured as a separate Module inside the application.
+
+It is located under: Areas/Identity/Pages
+
+You can think of it as a small application inside your main app that handles 
+authentication and user management.
+
+Folder Structure Overview
+
+Areas/
+└── Identity/
+└── Pages/
+├── _Layout.cshtml
+├── _ViewStart.cshtml
+├── _ViewImports.cshtml
+├── Account/
+│ ├── Login.cshtml
+│ ├── Register.cshtml
+│ ├── Logout.cshtml
+│ └── ...
+│
+└── Manage/
+├── Index.cshtml
+├── ChangePassword.cshtml
+├── Email.cshtml
+└── ...
+
+Purpose of Each Part
+
+3.1 Pages (root of Identity)
+
+_Layout.cshtml
+Defines the layout (HTML structure) used by Identity pages.
+_ViewStart.cshtml
+Determines which layout will be used for pages in this folder.
+_ViewImports.cshtml
+Contains shared directives like @using and TagHelpers.
+
+3.2 Account Folder
+
+This folder contains authentication-related pages:
+
+Login.cshtml → user login
+Register.cshtml → user registration
+Logout.cshtml → user logout
+ForgotPassword.cshtml → password reset
+
+These pages are used when the user is NOT authenticated 
+or performing login-related actions.
+
+3.3 Manage Folder
+
+This folder contains user profile management pages:
+
+Index.cshtml → main profile page
+ChangePassword.cshtml → change password
+Email.cshtml → update email
+PersonalData.cshtml → manage personal data
+
+These pages are used when the user IS authenticated.
+
+Navigation Flow:
+
+Step 1: User is on Home Page
+
+Uses layout from: /Views/Shared/_Layout.cshtml
+
+Step 2: _LoginPartial is rendered
+
+Contains link:
+
+asp-area="Identity"
+asp-page="/Account/Manage/Index"
+
+Step 3: User clicks the link
+
+Navigates to:
+
+/Areas/Identity/Pages/Account/Manage/Index.cshtml
+
+Step 4: Identity layout is applied
+
+Because of:
+
+/Areas/Identity/Pages/_ViewStart.cshtml
+
+Layout Behavior (Important)
+
+Layout is NOT selected automatically based on Area.
+
+Instead, layout is determined by _ViewStart.cshtml.
+
+Main app uses:
+/Views/_ViewStart.cshtml → Shared/_Layout.cshtml
+Identity uses:
+/Areas/Identity/Pages/_ViewStart.cshtml → Identity/_Layout.cshtml
+
+This is why Identity pages can have a different layout.
+
+Why Identity Has Its Own Layout and Files?
+
+Identity is designed to be:
+
+modular
+self-contained
+reusable
+
+This allows it to work out-of-the-box without modifying your main application.
+It behaves like a plug-in UI inside your app.
+
+Key Concept:
+
+Routing decides which page is opened.
+_ViewStart decides which layout is used.
+
+Summary:
+
+Identity lives inside Areas/Identity/Pages
+Account folder handles login and authentication
+Manage folder handles user profile features
+Identity has its own layout system
+Layout is controlled by _ViewStart, not by Area automatically

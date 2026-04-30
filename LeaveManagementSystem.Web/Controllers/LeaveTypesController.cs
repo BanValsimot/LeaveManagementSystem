@@ -1,18 +1,13 @@
-﻿using AutoMapper;
-using LeaveManagementSystem.Web.Data;
-using LeaveManagementSystem.Web.Models.LeaveTypes;
+﻿using LeaveManagementSystem.Web.Models.LeaveTypes;
 using LeaveManagementSystem.Web.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LeaveManagementSystem.Web.Controllers;
 
 //Database UI Controller -> scaffolded (with Views)
+//Primary Constructor used
+
+[Authorize(Roles = Roles.Administrator)]
 public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Controller
 {
     private const string NameExistsValidationMessage =
@@ -28,7 +23,7 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
         return View(viewData);
     }
 
-    // GET: LeaveTypes/Details/5 -> LeaveTypeReadOnlyVM
+    // GET: LeaveTypes/Details/5 -> LeaveTypeReadOnlyVM (get one record)
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -53,8 +48,8 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
         return View();
     }
 
-    // POST: LeaveTypes/Create 
-    // LeaveTypeCreateVM -> LeaveType
+    // POST: LeaveTypes/Create -> Bind Data to LeaveTypeCreateVM object
+    // transform LeaveTypeCreateVM -> LeaveType
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
@@ -64,9 +59,11 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
         //Adding custom validation and model state error
         if(await _leaveTypeServices.CheckIfLeaveTypeNameExistsAsync(leaveTypeCreate.Name))
         {
+            //add custom Error to the Model State    
             ModelState.AddModelError(nameof(leaveTypeCreate.Name),
                 NameExistsValidationMessage);
         };
+
         //ModelState stores the state of data submitted from a form,
         //including values and validation errors
         if (ModelState.IsValid)
@@ -74,6 +71,7 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
             await _leaveTypeServices.CreateAsync(leaveTypeCreate);
             return RedirectToAction(nameof(Index));
         }
+
         //Data not valid -> return to a Create page (errors will appear in Browser)
         return View(leaveTypeCreate);
     }
@@ -87,7 +85,8 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
             return NotFound();
         }
 
-        var viewData = await _leaveTypeServices.GetAsync<LeaveTypeEditVM>(id.Value);
+        var viewData =
+            await _leaveTypeServices.GetAsync<LeaveTypeEditVM>(id.Value);
         
         if (viewData == null)
         {
@@ -111,11 +110,15 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
         }
 
         //Adding custom validation and model state error
-        if (await _leaveTypeServices.CheckIfLeaveTypeNameExistsForEditAsync(leaveTypeEdit))
+        //Is there ANY other record with the same Name but a different Id? ->
+        //Duplicate exists → return true → add ModelState error
+        if (await _leaveTypeServices.CheckIfLeaveTypeNameExistsForEditAsync(
+            leaveTypeEdit))
         {
             ModelState.AddModelError(nameof(leaveTypeEdit.Name),
                 NameExistsValidationMessage);
         };
+
         //ModelState stores the state of data submitted from a form,
         //including values and validation errors
         if (ModelState.IsValid)
@@ -147,6 +150,7 @@ public class LeaveTypesController(ILeaveTypeServices _leaveTypeServices) : Contr
     }
 
     // GET: LeaveTypes/Delete/5
+    // Return LeaveTypeReadOnlyVM (via ID)
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)

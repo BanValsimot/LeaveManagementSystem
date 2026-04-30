@@ -1,0 +1,64 @@
+﻿Seeding is the process of adding initial data to the database using entity types. 
+
+Because you inherit from: IdentityDbContext<ApplicationUser>
+
+👉 ASP.NET Identity already gives you these entity types:
+You do NOT need to create these classes or tables yourself.
+
+IdentityUser        → AspNetUsers
+IdentityRole        → AspNetRoles
+IdentityUserRole    → AspNetUserRoles
+
+In EF Core, this is done in OnModelCreating using builder.Entity<T>().HasData().
+
+Each entity type (e.g., IdentityRole, ApplicationUser) represents a database table, 
+and the seeded objects represent rows in those tables.
+
+In this project, we seed:
+- Roles (IdentityRole → AspNetRoles)
+- Users (ApplicationUser → AspNetUsers)
+- User-Role relationships (IdentityUserRole → AspNetUserRoles)
+
+This works because IdentityDbContext already includes these entity types.
+Seeding is applied during database migrations.
+
+Identity Tables Relationship (Users ↔ Roles ↔ UserRoles)
+🧩 Tables involved
+AspNetUsers        → stores users
+AspNetRoles        → stores roles
+AspNetUserRoles    → links users and roles
+
+🧠 Relationship type
+Many-to-Many relationship
+
+👉 Meaning:
+One user can have multiple roles  
+One role can belong to multiple users
+
+📊 Table structure
+
+1. Users (AspNetUsers)
+Id (PK) | Email              | UserName
+------------------------------------------------
+U1      | admin@localhost    | admin
+U2      | user@localhost     | user
+
+2. Roles (AspNetRoles)
+Id (PK) | Name
+-------------------------
+R1      | Employee
+R2      | Supervisor
+R3      | Administrator
+
+3. UserRoles (AspNetUserRoles)
+UserId (FK) | RoleId (FK)
+--------------------------
+U1          | R3   (Admin user → Administrator)
+U2          | R1   (User → Employee)
+U2          | R2   (User → Supervisor)
+
+🧠 How this works
+User does NOT store roles directly
+
+👉 Instead:
+Roles are linked through the join table (AspNetUserRoles)

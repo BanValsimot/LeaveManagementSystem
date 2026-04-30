@@ -1,0 +1,240 @@
+﻿@page
+@* Marks this file as a Razor Page (no controller needed) *@
+
+@model RegisterModel
+@* This page is backed by RegisterModel (Register.cshtml.cs) *@
+
+@{
+    ViewData["Title"] = "Register";
+    // ViewData is a dictionary used to pass data to the layout (_Layout.cshtml)
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+
+        <!-- FORM -->
+        <form id="registerForm"
+              asp-route-returnUrl="@Model.ReturnUrl"
+              method="post">
+
+            <!-- asp-route-returnUrl:
+                 Adds a query parameter "returnUrl" to the form action URL
+
+                 @Model.ReturnUrl comes from:
+                 → RegisterModel (PageModel)
+                 → It is set in OnGetAsync / OnPostAsync
+
+                 Example:
+                 /Identity/Account/Register?returnUrl=/Home/Index
+
+                 This allows redirecting user back after registration -->
+            <!-- method="post":
+                 Submits form to OnPostAsync method in RegisterModel -->
+
+            <h2>Create a new account.</h2>
+            <hr />
+
+            <!-- asp-validation-summary="ModelOnly":
+                 Displays validation errors NOT tied to specific fields
+                 Errors are added in backend using ModelState.AddModelError() -->
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger"
+                 role="alert"></div>
+
+            <!-- EMAIL -->
+            <div class="form-floating mb-3">
+
+                <!-- asp-for="Input.Email":
+                     Binds input to RegisterModel.Input.Email property
+
+                     Input comes from:
+                     → public InputModel Input { get; set; }
+
+                     After submit:
+                     → value is automatically filled into Input.Email -->
+                <input asp-for="Input.Email"
+                       class="form-control"
+                       autocomplete="username"
+                       aria-required="true"
+                       placeholder="name@example.com" />
+
+                <!-- asp-for on label:
+                     Generates <label for="Input_Email"> automatically -->
+                <label asp-for="Input.Email">Email</label>
+
+                <!-- asp-validation-for:
+                     Displays validation error for Input.Email
+                     Uses DataAnnotations like [Required], [EmailAddress] -->
+                <span asp-validation-for="Input.Email"
+                      class="text-danger"></span>
+            </div>
+
+            <!-- FIRST NAME -->
+            <div class="form-floating mb-3">
+                <input asp-for="Input.FirstName"
+                       class="form-control"
+                       aria-required="true"
+                       placeholder="Your Name" />
+
+                <label asp-for="Input.FirstName">First Name</label>
+
+                <span asp-validation-for="Input.FirstName"
+                      class="text-danger"></span>
+            </div>
+
+            <!-- LAST NAME -->
+            <div class="form-floating mb-3">
+                <input asp-for="Input.LastName"
+                       class="form-control"
+                       aria-required="true"
+                       placeholder="Your Surname" />
+
+                <label asp-for="Input.LastName">Last Name</label>
+
+                <span asp-validation-for="Input.LastName"
+                      class="text-danger"></span>
+            </div>
+
+            <!-- DATE OF BIRTH -->
+            <div class="form-floating mb-3">
+                <input asp-for="Input.DateOfBirth"
+                       class="form-control"
+                       aria-required="true"
+                       placeholder="Date of Birth" />
+
+                <label asp-for="Input.DateOfBirth">Date Of Birth</label>
+
+                <span asp-validation-for="Input.DateOfBirth"
+                      class="text-danger"></span>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password"
+                       class="form-control"
+                       autocomplete="new-password"
+                       aria-required="true"
+                       placeholder="password" />
+
+                <label asp-for="Input.Password">Password</label>
+
+                <span asp-validation-for="Input.Password"
+                      class="text-danger"></span>
+            </div>
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword"
+                       class="form-control"
+                       autocomplete="new-password"
+                       aria-required="true"
+                       placeholder="password" />
+
+                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+
+                <span asp-validation-for="Input.ConfirmPassword"
+                      class="text-danger"></span>
+            </div>
+
+            <!-- ROLE SELECTION -->
+            @foreach (var role in Model.RoleNames)
+            {
+                // Model.RoleNames comes from RegisterModel (PageModel)
+                // It is populated in OnGetAsync:
+                // e.g. Input.RoleNames = roles from database
+
+                <div class="form-check">
+
+                    <!-- asp-for="Input.RoleName":
+                         Binds selected radio value to Input.RoleName
+
+                         value="@role":
+                         Each radio button gets value = role name (e.g. "Admin") -->
+                    <input class="form-check-input"
+                           type="radio"
+                           asp-for="Input.RoleName"
+                           value="@role">
+
+                    <!-- label is linked to same property -->
+                    <label class="form-check-label"
+                           asp-for="Input.RoleName">
+                        @role
+                    </label>
+                </div>
+            }
+
+            <br />
+
+            <!-- Displays validation error if no role selected -->
+            <span asp-validation-for="Input.RoleName"
+                  class="text-danger"></span>
+
+            <!-- Submit button triggers OnPostAsync -->
+            <button id="registerSubmit"
+                    type="submit"
+                    class="w-100 btn btn-lg btn-primary">
+                Register
+            </button>
+        </form>
+    </div>
+
+    <!-- EXTERNAL LOGIN -->
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Use another service to register.</h3>
+            <hr />
+
+            @{
+                // Model.ExternalLogins comes from:
+                // _signInManager.GetExternalAuthenticationSchemesAsync()
+
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>No external providers configured.</p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account"
+                          asp-page="./ExternalLogin"
+                          asp-route-returnUrl="@Model.ReturnUrl"
+                          method="post"
+                          class="form-horizontal">
+
+                        <!-- asp-page="./ExternalLogin":
+                             Navigates to Razor Page:
+                             /Areas/Identity/Pages/Account/ExternalLogin.cshtml -->
+                        <!-- asp-route-returnUrl:
+                             Again passes ReturnUrl from PageModel -->
+
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <!-- Each provider (Google, Facebook, etc.) -->
+                                    <button type="submit"
+                                            class="btn btn-primary"
+                                            name="provider"
+                                            value="@provider.Name"
+                                            title="Log in using your @provider.DisplayName account">
+
+                                        @provider.DisplayName
+                                    </button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Loads jQuery validation scripts -->
+    <!-- Enables client-side validation based on DataAnnotations -->
+    <partial name="_ValidationScriptsPartial" />
+}

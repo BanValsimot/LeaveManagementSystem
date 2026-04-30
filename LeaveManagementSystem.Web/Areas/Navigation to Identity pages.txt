@@ -1,0 +1,17 @@
+﻿Full navigation flow
+--------------------
+User opens MVC page
+        ↓
+_Layout.cshtml (MVC)
+        ↓
+_LoginPartial
+        ↓
+User clicks Login/Register
+        ↓
+asp-area="Identity" + asp-page="..."
+        ↓
+Routing to Razor Page
+        ↓
+/Areas/Identity/Pages/Account/Login.cshtml
+        ↓
+Identity _Layout.cshtml is applied

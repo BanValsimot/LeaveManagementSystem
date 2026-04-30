@@ -1,0 +1,50 @@
+﻿🧩 1. ApplicationDbContext
+
+👉 This is your main class for talking to the database
+
+All database operations go through this class
+
+🧩 2. IdentityDbContext<ApplicationUser>
+
+It means:
+Include Identity tables + use your custom user class
+
+💡 What Identity adds automatically
+When you inherit from IdentityDbContext, you get tables like:
+
+Users (AspNetUsers)
+Roles (AspNetRoles)
+UserRoles (AspNetUserRoles)
+Claims, Logins, etc.
+
+👉 You don’t have to create them manually
+
+🧩 3. ApplicationUser
+
+👉 Your custom user class
+
+public class ApplicationUser : IdentityUser
+{
+    public string FirstName { get; set; }
+}
+
+👉 This allows you to:
+
+Extend user with your own fields
+
+🧩 4. Constructor
+public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+
+🧠 What is happening here?
+
+👉 ASP.NET injects configuration automatically:
+
+Connection string
+Database provider (SQL Server)
+Other settings
+
+🧩 5. : base(options)
+
+👉 Passes configuration to parent class (DbContext)
+
+Without this → database connection would not work

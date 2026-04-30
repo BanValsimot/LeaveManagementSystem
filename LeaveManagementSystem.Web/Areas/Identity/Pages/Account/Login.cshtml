@@ -1,0 +1,230 @@
+﻿@* 
+    @page directive:
+    ------------------------------------
+    Marks this file as a Razor Page. 
+
+    This allows the page to:
+    - handle HTTP requests (GET, POST)
+    - be accessed via a URL
+    - use PageModel (LoginModel) for backend logic
+    - no Controller needed
+
+    Without @page:
+    - this file would NOT be routable
+    - it would behave like a normal view (MVC)
+
+    Example:
+    /Areas/Identity/Pages/Account/Login.cshtml
+    becomes accessible via:
+    /Identity/Account/Login
+*@
+@page
+@* 
+    @model LoginModel:
+    -------------------
+    Specifies the PageModel (backend class) that this Razor Page is bound to
+
+    LoginModel is defined in:
+    Login.cshtml.cs
+
+    It contains:
+    - properties (e.g. Input.Email, Input.Password)
+    - methods (e.g. OnGet(), OnPostAsync())
+
+    This allows the Razor Page to:
+    - access backend data → @Model.Input.Email
+    - bind form inputs → asp-for="Input.Email"
+    - interact with server-side logic
+
+    In Razor Pages:
+    - @model connects the UI (.cshtml) with its logic (.cshtml.cs)
+
+    Without @model:
+    - the page would not know what data structure it is working with
+*@
+@model LoginModel
+
+@{
+    @* Sets page title used in layout *@
+    ViewData["Title"] = "Log in";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            @* 
+                Main login form
+                method="post" → triggers OnPostAsync() in Login.cshtml.cs
+            *@
+            <form id="account" method="post">
+
+                <h2>Use a local account to log in.</h2>
+                <hr />
+
+                @* Displays validation errors (e.g. wrong password) *@
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                @* EMAIL INPUT *@
+                <div class="form-floating mb-3">
+
+                    @* 
+                        asp-for binds input to: Input.Email (in PageModel)
+                        value is sent to backend on POST
+                    *@
+
+                    <!-- autocomplete="username"
+                    Tells the browser what kind of data this field contains.
+                    Used for autofill (saved credentials) and password managers.
+                    Helps the browser suggest the correct username/email. -->
+                    <!-- aria-required="true"
+                         Accessibility attribute (ARIA = Accessible Rich Internet Applications).
+                         Indicates to screen readers that this field is required.
+                         Helps users with assistive technologies understand form requirements. -->
+                    <input asp-for="Input.Email"
+                           class="form-control"
+                           autocomplete="username"
+                           aria-required="true"
+                           placeholder="name@example.com" />
+
+                    @* Label automatically linked to Email field *@
+                    <label asp-for="Input.Email" class="form-label">Email</label>
+
+                    @* Displays validation errors for Email *@
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                @* PASSWORD INPUT *@
+                <div class="form-floating mb-3">
+
+                    @* 
+                        asp-for="Input.Password"
+                        value is NOT stored directly → used for authentication
+                    *@
+                    <input asp-for="Input.Password"
+                           class="form-control"
+                           autocomplete="current-password"
+                           aria-required="true"
+                           placeholder="password" />
+
+                    <label asp-for="Input.Password" class="form-label">Password</label>
+
+                    @* Displays validation errors for Password *@
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                @* REMEMBER ME CHECKBOX *@
+                <div class="checkbox mb-3">
+
+                    @* 
+                        If checked → login session persists (cookie stored longer)
+                    *@
+                    <label asp-for="Input.RememberMe" class="form-label">
+                        <input class="form-check-input" asp-for="Input.RememberMe" />
+
+                        @* Displays label text for RememberMe property *@
+                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                    </label>
+                </div>
+
+                @* SUBMIT BUTTON → sends form data to backend *@
+                <div>
+                    <button id="login-submit"
+                            type="submit"
+                            class="w-100 btn btn-lg btn-primary">
+                        Log in
+                    </button>
+                </div>
+
+                @* ADDITIONAL ACCOUNT LINKS *@
+                <div>
+                    <p>
+                        @* Link to Forgot Password page *@
+                        <a id="forgot-password" asp-page="./ForgotPassword">
+                            Forgot your password?
+                        </a>
+                    </p>
+
+                    <p>
+                        @* Link to Register page *@
+                        <a asp-page="./Register"
+                           asp-route-returnUrl="@Model.ReturnUrl">
+                            Register as a new user
+                        </a>
+                    </p>
+
+                    <p>
+                        @* Link to resend email confirmation *@
+                        <a id="resend-confirmation"
+                           asp-page="./ResendEmailConfirmation">
+                            Resend email confirmation
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    @* EXTERNAL LOGIN SECTION (Google, Facebook, etc.) *@
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+
+            <h3>Use another service to log in.</h3>
+            <hr />
+
+            @{
+                @* 
+                    Model.ExternalLogins contains configured providers
+                    (Google, Facebook, etc.)
+                *@
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured.
+                            See this
+                            <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                article about setting up external logins
+                            </a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    @* Form for external login providers *@
+                    <form id="external-account"
+                          asp-page="./ExternalLogin"
+                          asp-route-returnUrl="@Model.ReturnUrl"
+                          method="post"
+                          class="form-horizontal">
+
+                        <div>
+                            <p>
+
+                                @* Loop through providers (Google, etc.) *@
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    @* Each button submits selected provider *@
+                                    <button type="submit"
+                                            class="btn btn-primary"
+                                            name="provider"
+                                            value="@provider.Name"
+                                            title="Log in using your @provider.DisplayName account">
+                                        @provider.DisplayName
+                                    </button>
+                                }
+
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    @* Adds client-side validation scripts *@
+    <partial name="_ValidationScriptsPartial" />
+}

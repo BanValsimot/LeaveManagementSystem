@@ -31,7 +31,8 @@
                 </a>
 
                 <!-- Mobile menu toggle button (Bootstrap functionality) -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                <button class="navbar-toggler" type="button" 
+                        data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent"
                         aria-expanded="false"
                         aria-label="Toggle navigation">
@@ -44,23 +45,30 @@
 
                         <!-- Home link -->
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" 
+                            asp-action="Index">Home</a>
                         </li>
 
                         <!-- Privacy link -->
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" 
+                            asp-action="Privacy">Privacy</a>
                         </li>
 
-                        <!-- Leave Types page -->
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="LeaveTypes" asp-action="Index">Leave Types</a>
-                        </li>
+                        @if(User.IsInRole(Roles.Administrator))
+                        {
+                            <!-- Leave Types page -->
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" 
+                                asp-controller="LeaveTypes" asp-action="Index">Leave Types</a>
+                            </li>
+                        }
+
                     </ul>
 
                     <!-- Login/Register or Username/Logout (dynamic based on authentication) -->
                     <!-- This partial is rendered on EVERY page -->
-                    <partial name="_LoginPartial" />
+                    <partial name="_LoginPartial"/>
                 </div>
             </div>
         </nav>

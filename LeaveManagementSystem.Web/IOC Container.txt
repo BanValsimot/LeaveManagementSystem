@@ -1,0 +1,57 @@
+﻿IoC Container (Inversion of Control Container)
+
+An IoC (Inversion of Control) Container is a component in an application 
+that is responsible for creating objects and managing their dependencies automatically.
+
+Instead of manually creating objects using new, the IoC container provides those objects 
+when needed. This is commonly used together with Dependency Injection (DI).
+
+Why it is used:
+Normally, a class creates its own dependencies:
+var service = new LeaveTypeService();
+This creates tight coupling between classes.
+
+With IoC:
+
+The container creates and provides the service automatically
+This leads to:
+
+Loose coupling
+Easier testing
+Better maintainability
+
+How it works in ASP.NET Core:
+
+Services are registered in Program.cs:
+
+builder.Services.AddScoped<ILeaveTypeServices, LeaveTypeServices>();
+
+This tells the IoC container:
+“When someone asks for ILeaveTypeServices, give them LeaveTypeServices”
+
+Then used in a class (e.g., Controller):
+
+public class LeaveTypesController
+{
+    private readonly ILeaveTypeServices _service;
+
+    public LeaveTypesController(ILeaveTypeServices service)
+    {
+        _service = service;
+    }
+}
+
+The IoC container automatically:
+
+Creates LeaveTypeServices
+Injects it into the controller
+
+Key idea (Inversion of Control):
+
+Control of object creation is moved from your code to the container
+
+Relationship with Dependency Injection:
+
+IoC = concept
+DI = implementation
+IoC Container = tool that performs DI

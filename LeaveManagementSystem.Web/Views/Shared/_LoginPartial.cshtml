@@ -1,31 +1,106 @@
 ﻿@using Microsoft.AspNetCore.Identity
 
-<!-- Inject Identity services (provided by Dependency Injection) -->
+<!-- 
+    inject keyword is used in Razor views to get services 
+    from the Dependency Injection (DI) container.
+
+    Instead of creating objects manually, ASP.NET Core provides
+    already configured services (like UserManager, SignInManager).
+
+    This keeps code clean, testable, and consistent across the app.
+-->
+
+@* 
+    SignInManager:
+    ----------------
+    Service responsible for handling authentication (signing users in and out).
+
+    It works with cookies/tokens and manages the login session.
+
+    Common uses:
+    - SignInManager.PasswordSignInAsync(...) → login user
+    - SignInManager.SignOutAsync() → logout user
+    - SignInManager.IsSignedIn(User) → check if user is authenticated
+
+    Think of it as: "handles the LOGIN process"
+*@
 @inject SignInManager<ApplicationUser> SignInManager
+
+@* 
+    UserManager:
+    ----------------
+    Service responsible for managing users in the database.
+
+    It handles CRUD operations and user-related logic.
+
+    Common uses:
+    - UserManager.CreateAsync(user, password) → create user
+    - UserManager.FindByEmailAsync(...) → find user
+    - UserManager.GetUserAsync(User) → get current user
+    - UserManager.AddToRoleAsync(...) → assign roles
+
+    Think of it as: "handles USER DATA and USER MANAGEMENT"
+*@
 @inject UserManager<ApplicationUser> UserManager
 
-<!-- Navigation container (used inside navbar in _Layout.cshtml) -->
+<!-- Navigation container (inside _Layout.cshtml navbar) -->
 <ul class="navbar-nav">
 
-    @* Check if the user is signed in *@
+    @* 
+        "User" is a ClaimsPrincipal object representing the current user.
+        It is automatically available in Razor views.
+
+        SignInManager.IsSignedIn(User) checks:
+        -> Is this ClaimsPrincipal authenticated?
+    *@
     @if (SignInManager.IsSignedIn(User))
     {
         <!-- ================= USER IS LOGGED IN ================= -->
 
         <li class="nav-item">
-            <!-- Displays username and links to account management page -->
+            <!-- 
+                Link to Identity Manage page (profile settings)
+
+                asp-area="Identity" tells routing to use Identity UI (Area folder)
+                asp-page="/Account/Manage/Index" points to Razor Page (path)
+            -->
             <a class="nav-link text-light"
                asp-area="Identity"
                asp-page="/Account/Manage/Index"
                title="Manage">
+                <!--
+                    User.Identity.Name comes from ClaimsPrincipal.
 
-                <!-- User.Identity.Name = current logged-in username -->
+                    It usually maps to:
+                    -> username OR email (depending on config)
+
+                    Internally stored as a "claim":
+                    ClaimTypes.Name
+
+                    ?. (null-conditional operator):
+                    -------------------------------
+                    Used to safely access a property when the object might be null.
+                    If User.Identity is null → it will NOT throw an error,
+                    instead it returns null.
+                    This prevents runtime exceptions when user is not authenticated.
+
+                    ! (exclamation mark in HTML):
+                    -----------------------------
+                    This is NOT C# code.
+                    It is just a normal character displayed in the UI (text output).
+                    It has no special meaning in Razor or C# in this context.
+                -->
                 Hello @User.Identity?.Name!
             </a>
         </li>
 
         <li class="nav-item">
-            <!-- Logout form (POST request for security reasons) -->
+            <!-- 
+                Logout must be POST (not GET) for security reasons:
+                -> prevents CSRF attacks
+
+                asp-route-returnUrl tells where to go after logout
+            -->
             <form class="form-inline"
                   asp-area="Identity"
                   asp-page="/Account/Logout"
@@ -61,5 +136,4 @@
             </a>
         </li>
     }
-
 </ul>

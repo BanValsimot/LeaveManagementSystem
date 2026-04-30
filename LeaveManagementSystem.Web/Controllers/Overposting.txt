@@ -1,0 +1,22 @@
+﻿Overposting (Mass Assignment)
+
+Overposting happens when a user sends more data in a request than your application expects,
+allowing them to modify properties they should not have access to.
+
+This can be a security risk because users could change sensitive fields 
+(e.g., IsAdmin, UserId, etc.) that are not intended to be edited through a form.
+
+Example:
+
+If your model has: Id, Name, IsAdmin
+and your form only includes Name, a malicious user could still send:
+
+IsAdmin = true
+
+and update it if your application is not protected.
+
+How to prevent it:
+
+Use ViewModels (recommended)
+Use [Bind] attribute
+Manually map only allowed properties

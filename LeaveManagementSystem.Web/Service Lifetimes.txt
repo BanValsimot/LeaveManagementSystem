@@ -1,0 +1,139 @@
+﻿Service Lifetimes in ASP.NET Core (with App Examples)
+
+ASP.NET Core provides three lifetimes that control how long a service instance lives.
+
+1.AddScoped
+AddScoped creates one instance per HTTP request.
+
+In your app:
+
+User opens a page (e.g., /LeaveTypes/Index)
+→ Controller is created
+→ Service (LeaveTypeServices) is created
+→ SAME instance is used:
+    - inside controller
+    - across all method calls
+→ View is rendered
+→ Request ends → instance is destroyed
+
+Real example in your app:
+LeaveTypeServices (uses DbContext)
+
+Why scoped?
+One database connection per request → safe and efficient
+For the duration of a single HTTP request (Controller + processing + View rendering)
+
+2. AddTransient
+AddTransient creates a new instance every time it is requested.
+
+In your app:
+
+EmailSender is injected
+→ Each time it is used → NEW instance is created
+
+Real example:
+IEmailSender / EmailSender
+
+Why transient?
+Stateless → no need to reuse instance
+
+Scenario:
+Controller calls EmailSender twice
+→ two separate objects created
+
+3. AddSingleton
+AddSingleton creates one instance for the entire application lifetime.
+
+In your app (hypothetical example):
+
+App starts
+→ ONE instance created
+→ reused across ALL users and requests
+
+✅ Real-world examples
+Configuration settings
+Caching service
+Logging service
+
+Example in your context:
+Email configuration (SMTP settings)
+→ same for all users → perfect for Singleton
+--------------------------------------------
+
+Comparison (with your app):
+
+Scoped
+→ LeaveTypeServices
+→ one instance per request (Index, Create, Edit)
+
+Transient
+→ EmailSender
+→ new instance every time email is sent
+
+Singleton
+→ App configuration / caching
+→ one instance for entire app
+-------------------------------------------------
+
+Important Notes
+Scoped → best for database work (DbContext)
+Transient → best for lightweight, stateless logic
+Singleton → best for shared/global data
+
+⚠️ Important rule:
+
+Singleton should NOT depend on Scoped services
+
+Final Summary:
+Scoped = one instance per request (Controller + View lifecycle)
+Transient = new instance every time it is used
+Singleton = one instance for entire application
+
+One-line takeaway
+Scoped = per request, Transient = per use, Singleton = per application
+
+Request Lifecycle (Your App)
+
+Scoped:
+
+User clicks: /LeaveTypes/Index
+        ↓
+HTTP Request STARTS
+        ↓
+Controller is created
+        ↓
+Scoped services are created (e.g., LeaveTypeServices, DbContext)
+        ↓
+Controller calls Service methods
+        ↓
+Data is fetched from Database
+        ↓
+View is rendered
+        ↓
+HTTP Response sent to user
+        ↓
+HTTP Request ENDS
+        ↓
+Scoped instances are destroyed
+
+Transient:
+
+Controller asks for EmailSender
+    ↓
+New instance created
+
+Controller asks again
+    ↓
+Another NEW instance created
+
+Multiple instances in SAME request
+
+Singleton:
+
+Application STARTS
+    ↓
+Create instance (once)
+
+All requests use SAME instance
+    ↓
+Application STOPS → instance destroyed

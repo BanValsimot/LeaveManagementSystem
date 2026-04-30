@@ -1,0 +1,176 @@
+﻿Validation in ASP.NET Core (Full Overview)
+
+Validation in ASP.NET Core ensures that user input is correct, safe, 
+and follows defined rules before being processed or saved to the database.
+
+Validation happens in two places:
+
+1. Client-side (JavaScript)
+2. Server-side (ModelState)
+
+Both are important, but they serve different purposes.
+
+1. Validation Attributes (Source of Truth)
+
+Validation rules are defined using attributes in ViewModels:
+
+public class LeaveTypeCreateVM
+{
+    [Required]
+    [Length(4, 150)]
+    public string Name { get; set; }
+
+    [Required]
+    [Range(0.5, 90)]
+    public float Days { get; set; }
+}
+
+These attributes define:
+
+Required fields
+Allowed ranges
+Length restrictions
+
+They are used by BOTH client-side and server-side validation.
+
+2. Client-Side Validation (JavaScript)
+
+Enabled by:
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+ASP.NET generates HTML like:
+
+<input data-val="true" data-val-required="The Name field is required" />
+
+JavaScript reads these attributes and validates instantly in the browser.
+
+Purpose
+Improve user experience (fast feedback, no page reload)
+
+Example:
+User submits empty Name:
+
+→ Error shown immediately: "Name is required"
+❌ What if client-side validation does NOT exist?
+
+User submits: Name = ""
+
+Result:
+Form is submitted → page reloads → server must handle error
+
+👉 No immediate feedback (bad UX)
+
+🚨 Important
+Client-side validation can be bypassed
+
+Users can:
+
+Disable JavaScript
+Send manual HTTP requests (Postman, curl)
+
+3. Server-Side Validation (ModelState)
+
+In controller:
+
+if (ModelState.IsValid)
+{
+    // save to database
+}
+
+What happens
+1. Form is submitted
+2. Model binding maps values to ViewModel
+3. Validation attributes are checked
+4. ModelState is populated with errors (if any)
+
+Example:
+
+User submits:
+
+Name = ""
+Days = 100
+
+ModelState contains:
+
+Name → Required error
+Days → Out of range error
+❌ What if ModelState validation does NOT exist?
+Invalid data gets saved to database
+
+Example:
+
+Name = ""
+Days = 100
+
+👉 Results:
+
+Broken data
+Business logic errors
+Possible security issues
+
+4. Displaying Validation Errors
+Field-level errors:
+<span asp-validation-for="Name"></span>
+
+Shows: "Name is required"
+
+Model-level errors:
+<div asp-validation-summary="ModelOnly"></div>
+
+Shows general errors not tied to a specific field.
+
+5. Complete Validation Flow
+User fills form
+     ↓
+Client-side validation (JavaScript)
+     ↓
+Form submitted
+     ↓
+Model binding
+     ↓
+Validation attributes checked
+     ↓
+ModelState populated
+     ↓
+Controller checks ModelState.IsValid
+     ↓
+✔ Valid → Save to database
+❌ Invalid → Return view with errors
+
+
+6. What can go wrong (important scenarios)
+
+❌ No client-side validation
+User submits invalid data → page reloads → poor UX
+
+❌ No server-side validation
+User bypasses UI → sends invalid/malicious data → database corrupted
+
+❌ No validation attributes
+No rules defined → anything is accepted
+
+❌ Only trusting client-side validation
+Security risk → attacker can bypass JavaScript
+
+7. Key Concepts
+
+Validation attributes → define rules
+JavaScript → improves UX
+ModelState → enforces rules securely
+
+Final Summary:
+
+Validation in ASP.NET Core is a combination of attributes, client-side checks, 
+and server-side enforcement. 
+
+Client-side validation improves user experience, 
+but server-side validation (ModelState) is essential for security and data integrity.
+
+Both JavaScript (client-side) and ModelState (server-side)
+use the SAME validation attributes
+
+One-line takeaway:
+Never trust the client — always validate on the server.

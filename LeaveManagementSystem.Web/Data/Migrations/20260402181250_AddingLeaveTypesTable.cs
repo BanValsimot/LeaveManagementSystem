@@ -15,6 +15,7 @@ namespace LeaveManagementSystem.Web.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
+                    //start by one + increment by one
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(150)", nullable: false),
                     NumberOfDays = table.Column<float>(type: "real", nullable: false)
